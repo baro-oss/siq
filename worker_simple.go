@@ -62,6 +62,21 @@ func (w *SimpleWorker) Exec(msg any) {
 	w.mu.Unlock()
 }
 
+// SetRetryChan sets the retry channel for the SimpleWorker instance.
+// This function allows messages to be enqueued for retry in case of errors.
+//
+// Parameters:
+//   - retryChan: A channel of type any where messages will be enqueued for retry.
+//     The channel should be buffered to prevent blocking the worker's execution.
+//
+// The function is thread-safe and will not cause data races.
+// It locks the worker's mutex before setting the retry channel, ensuring that only one goroutine can access the channel at a time.
+func (w *SimpleWorker) SetRetryChan(retryChan chan any) {
+	w.mu.Lock()
+	w.retryChan = retryChan
+	w.mu.Unlock()
+}
+
 // Clone creates a new instance of SimpleWorker with the same properties as the current instance.
 // It returns a pointer to the cloned SimpleWorker instance.
 //

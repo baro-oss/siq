@@ -55,6 +55,9 @@ func NewSimpleQueue(worker Worker, opts ...SimpleQueueOtpFunc) *SimpleQueue {
 		cmdQueue.initialMaxWorker = MaxWorker
 	}
 
+	// Set retry channel for worker to message to queue again when processing failed
+	cmdQueue.worker.SetRetryChan(cmdQueue.queue)
+	//
 	cmdQueue.increaseWorker(1)
 
 	go cmdQueue.Run()
@@ -104,6 +107,10 @@ func (q *SimpleQueue) Len() int {
 func (q *SimpleQueue) increaseWorker(delta int64) {
 	q.mu.Lock()
 	defer q.mu.Unlock()
+
+	if q.numOfWorkers >= int64(q.initialMaxWorker) {
+		return
+	}
 
 	q.numOfWorkers += delta
 	atomic.AddInt64(&q.numOfWorkers, delta)

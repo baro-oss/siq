@@ -9,6 +9,10 @@ type QueueGroup struct {
 	queue map[Topic]Queue
 }
 
+func NewQueueGroup() *QueueGroup {
+	return &QueueGroup{queue: make(map[Topic]Queue)}
+}
+
 // AddQueue adds a new queue to the QueueGroup for a specific topic.
 //
 // Parameters:
